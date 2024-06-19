@@ -6,6 +6,7 @@ const app = express();
 const categoryRoute = require("./routes/categoryRoutes");
 const subCategoryRoute = require("./routes/subCategoryRoutes");
 const brandRoute = require("./routes/brandRoutes");
+const productRoute = require("./routes/productRoutes");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/subCategory", subCategoryRoute);
 app.use("/api/v1/brand", brandRoute);
+app.use("/api/v1/product", productRoute);
 
 // unhandled routes
 app.all("*", (req, res, next) => {
