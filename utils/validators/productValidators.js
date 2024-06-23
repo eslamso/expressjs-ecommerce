@@ -1,6 +1,7 @@
 const validator = require("express-validator");
 const validatorMiddleWare = require("../../middlesWares/validatorMiddleWare");
 const categoryModel = require("../../models/categoryModel");
+const subCategoryModel = require("../../models/subcategoryModel");
 exports.getProductValidator = [
   validator.check("id").isMongoId().withMessage("invalid Product id format"),
   validatorMiddleWare,
@@ -86,7 +87,18 @@ exports.createProductValidator = [
     .body("subcategory")
     .optional()
     .isArray()
-    .withMessage("invalid subcategory must be an array"),
+    .withMessage("invalid subcategory must be an array")
+    .custom(async (vals, { req }) => {
+      const categories = await subCategoryModel.find({
+        _id: { $exists: true, $in: vals },
+        category: req.body.category,
+      });
+      console.log(categories);
+      if (categories.length !== vals.length || categories.length < 1) {
+        throw new Error("subcategories not found yaba");
+      }
+      return true;
+    }),
   validator
     .body("brand")
     .optional()

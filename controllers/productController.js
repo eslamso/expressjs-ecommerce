@@ -2,7 +2,6 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const productModel = require("../models/productModel");
 const AppError = require("../utils/appError");
-const { path } = require("../app");
 
 // @desc create product
 // @route POST /api/v1/product
@@ -22,10 +21,26 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @access Public
 
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
-  //console.log(process.env.NODE_ENV);
-  const products = await productModel
-    .find()
+  //1) filtering
+  const queryStringObj = { ...req.query };
+  const exitingFields = ["page", "limit", "sort", "fields"];
+  exitingFields.forEach((field) => delete queryStringObj[field]);
+  console.log(queryStringObj);
+  // applying filter using [gte, lte, gt, lt, ne]
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(
+    /\b(gt|lt|gte|lte|ne)\b/g,
+    (match) => `$${match}`
+  );
+  console.log(queryStr);
+  console.log(JSON.parse(queryStr));
+
+  // 2)building query
+  const mongooseQuery = productModel
+    .find(JSON.parse(queryStr))
     .populate({ path: "category", select: "name -_id" });
+  // 3) consuming query
+  const products = await mongooseQuery;
   res.status(200).json({
     success: true,
     results: products.length,
