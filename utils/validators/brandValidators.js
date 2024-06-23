@@ -1,3 +1,5 @@
+const slugify = require("slugify");
+
 const validator = require("express-validator");
 const validatorMiddleWare = require("../../middlesWares/validatorMiddleWare");
 exports.getBrandValidator = [
@@ -5,12 +7,22 @@ exports.getBrandValidator = [
   validatorMiddleWare,
 ];
 exports.createBrandValidator = [
-  validator.body("name").notEmpty().withMessage("a brand must have name"),
+  validator
+    .body("name")
+    .notEmpty()
+    .withMessage("a brand must have name")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validatorMiddleWare,
 ];
 
 exports.updateBrandValidator = [
-  validator.body("name").notEmpty().withMessage("a brand must have a name"),
+  validator.body("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
   validator.param("id").isMongoId().withMessage("invaild brand id format"),
   validatorMiddleWare,
 ];

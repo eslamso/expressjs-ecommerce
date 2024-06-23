@@ -1,3 +1,5 @@
+const slugify = require("slugify");
+
 const validator = require("express-validator");
 const validatorMiddleWare = require("../../middlesWares/validatorMiddleWare");
 const categoryModel = require("../../models/categoryModel");
@@ -7,7 +9,14 @@ exports.getProductValidator = [
   validatorMiddleWare,
 ];
 exports.createProductValidator = [
-  validator.body("title").notEmpty().withMessage("a Product must have title"),
+  validator
+    .body("title")
+    .notEmpty()
+    .withMessage("a Product must have title")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validator
     .body("description")
     .notEmpty()
@@ -110,6 +119,14 @@ exports.createProductValidator = [
 
 exports.updateProductValidator = [
   validator.param("id").isMongoId().withMessage("invalid Product id format"),
+  validator
+    .body("title")
+    .notEmpty()
+    .withMessage("a subCategory must have a name")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validatorMiddleWare,
 ];
 
