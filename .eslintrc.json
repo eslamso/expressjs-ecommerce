@@ -7,7 +7,7 @@
     "no-console": "off",
     "consistent-return": "off",
     "func-names": "off",
-    "import/newline-after-import": ["warn", { "count": 2 }],
+    "import/newline-after-import": ["off"],
     "object-shorthand": "off",
     "no-process-exit": "off",
     "no-param-reassign": "off",
