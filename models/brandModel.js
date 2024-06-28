@@ -21,6 +21,11 @@ brandSchema.pre("save", function (next) {
   this.slug = slugify(this.name);
   next();
 });
+brandSchema.post("init", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/uploads/brands/${doc.image}`;
+  }
+});
 brandSchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate();
   if (update.name) {

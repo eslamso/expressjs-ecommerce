@@ -7,6 +7,8 @@ const router = express.Router();
 router
   .route("/")
   .post(
+    ProductController.uploadImage,
+    ProductController.resizeImage,
     ProductValidator.createProductValidator,
     ProductController.createProduct
   )

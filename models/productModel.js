@@ -61,5 +61,15 @@ productSchema.pre(/^find/, function (next) {
   });
   next();
 });
+productSchema.post("init", (doc) => {
+  if (doc.imageCover) {
+    doc.imageCover = `${process.env.BASE_URL}/uploads/products/${doc.imageCover}`;
+  }
+  if (doc.images) {
+    doc.images.forEach((img, index) => {
+      doc.images[index] = `${process.env.BASE_URL}/uploads/products/${img}`;
+    });
+  }
+});
 const ProductModel = mongoose.model("Product", productSchema);
 module.exports = ProductModel;

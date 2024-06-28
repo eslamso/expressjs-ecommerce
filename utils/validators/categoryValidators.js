@@ -8,7 +8,7 @@ exports.getCategoryValidator = [
 ];
 exports.createCategoryValidator = [
   validator
-    .body("name")
+    .check("name")
     .notEmpty()
     .withMessage("a category must have name")
     .custom((val, { req }) => {

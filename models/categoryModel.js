@@ -22,6 +22,10 @@ categorySchema.pre("save", function (next) {
   this.slug = slugify(this.name);
   next();
 });
-
+categorySchema.post("init", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/uploads/categories/${doc.image}`;
+  }
+});
 const categoryModel = mongoose.model("Category", categorySchema);
 module.exports = categoryModel;

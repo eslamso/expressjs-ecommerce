@@ -9,6 +9,8 @@ router.use("/:categoryId/subcategory", subcategoryRouter);
 router
   .route("/")
   .post(
+    categoryController.uploadImage,
+    categoryController.resizeImage,
     categoryValidator.createCategoryValidator,
     categoryController.createCategory
   )
@@ -22,6 +24,8 @@ router
     categoryController.getCategory
   )
   .patch(
+    categoryController.uploadImage,
+    categoryController.resizeImage,
     categoryValidator.updateCategoryValidator,
     categoryController.updateCategory
   )

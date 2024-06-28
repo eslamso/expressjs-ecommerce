@@ -38,6 +38,7 @@ class ApiFeatures {
   }
   searching(modelName) {
     if (this.queryString.keyword) {
+      //for searching in different fields in the model
       const query = {};
       if (modelName === "products") {
         query.$or = [
@@ -49,7 +50,7 @@ class ApiFeatures {
           { name: { $regex: this.queryString.keyword, $options: "i" } },
         ];
       }
-      //console.log("Query:", query);
+      console.log("Query:", query);
       this.mongooseQuery = this.mongooseQuery.find(query);
     }
     return this;
@@ -59,7 +60,7 @@ class ApiFeatures {
 
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 50;
-    console.log("limit", limit);
+    //console.log("limit", limit);
     const skip = (page - 1) * limit;
     const endIndex = page * limit;
 

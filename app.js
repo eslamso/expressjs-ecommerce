@@ -1,5 +1,6 @@
-const express = require("express");
+const path = require("path");
 
+const express = require("express");
 const morgan = require("morgan");
 
 const app = express();
@@ -12,9 +13,10 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
 //middlewares
 
-if (process.env.NODE_ENV == "development") {
+if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // to send convert to json object
 app.use(express.json());
 

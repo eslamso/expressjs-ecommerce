@@ -8,7 +8,12 @@ const router = express.Router();
 //router.use("/:categoryId/subcategory", subcategoryRouter);
 router
   .route("/")
-  .post(brandValidator.createBrandValidator, brandController.createBrand)
+  .post(
+    brandController.uploadImage,
+    brandController.resizeImage,
+    brandValidator.createBrandValidator,
+    brandController.createBrand
+  )
   .get(brandController.getAllBrands);
 router
   .route("/:id")
@@ -18,6 +23,11 @@ router
     validatorMiddleWare,
     brandController.getBrand
   )
-  .patch(brandValidator.updateBrandValidator, brandController.updateBrand)
+  .patch(
+    brandController.uploadImage,
+    brandController.resizeImage,
+    brandValidator.updateBrandValidator,
+    brandController.updateBrand
+  )
   .delete(brandValidator.deleteBrandValidator, brandController.deleteBrand);
 module.exports = router;

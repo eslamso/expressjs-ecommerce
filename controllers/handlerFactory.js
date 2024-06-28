@@ -8,7 +8,7 @@ exports.deleteOne = (Model) =>
     const doc = await Model.findByIdAndDelete(id);
 
     if (!doc) {
-      return new AppError("No document found with that ID", 404);
+      return next(new AppError("No document found with that ID", 404));
     }
     res.status(204).json({
       success: true,
@@ -32,6 +32,7 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   asyncHandler(async (req, res, next) => {
+    //console.log(req.body);
     const doc = await Model.create(req.body);
     res.status(201).json({
       success: true,
