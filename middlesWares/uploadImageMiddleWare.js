@@ -14,4 +14,9 @@ const multerOptions = () => {
 };
 exports.uploadSingleImage = (fieldName) =>
   multerOptions().single(`${fieldName}`);
-exports.uploadImages = (array) => multerOptions().fields(array);
+
+exports.uploadImages = (array) =>
+  multerOptions().fields([
+    { name: "imageCover", maxCount: 1 },
+    { name: "images", maxCount: 8 },
+  ]);

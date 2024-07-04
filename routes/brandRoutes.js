@@ -2,6 +2,7 @@ const express = require("express");
 const brandController = require("../controllers/brandController");
 const validatorMiddleWare = require("../middlesWares/validatorMiddleWare");
 const brandValidator = require("../utils/validators/brandValidators");
+const { protect, restrictTo } = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -9,6 +10,8 @@ const router = express.Router();
 router
   .route("/")
   .post(
+    protect,
+    restrictTo("admin", "manager"),
     brandController.uploadImage,
     brandController.resizeImage,
     brandValidator.createBrandValidator,
@@ -24,10 +27,17 @@ router
     brandController.getBrand
   )
   .patch(
+    protect,
+    restrictTo("admin", "manager"),
     brandController.uploadImage,
     brandController.resizeImage,
     brandValidator.updateBrandValidator,
     brandController.updateBrand
   )
-  .delete(brandValidator.deleteBrandValidator, brandController.deleteBrand);
+  .delete(
+    protect,
+    restrictTo("admin"),
+    brandValidator.deleteBrandValidator,
+    brandController.deleteBrand
+  );
 module.exports = router;

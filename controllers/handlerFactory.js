@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
+const { concurrency } = require("sharp");
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
@@ -33,6 +34,7 @@ exports.updateOne = (Model) =>
 exports.createOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     //console.log(req.body);
+    //console.log(`current user:${req.user}`);
     const doc = await Model.create(req.body);
     res.status(201).json({
       success: true,
