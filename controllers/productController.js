@@ -49,6 +49,7 @@ exports.getAllProducts = handler.getAll(productModel, "products");
 // @desc get product
 // @route GET /api/v1/product/:id
 // @access Public
+// reviews refer to virtual populate on product model
 exports.getProduct = handler.getOne(productModel, "reviews");
 
 // @desc update product

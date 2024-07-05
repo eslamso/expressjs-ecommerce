@@ -20,7 +20,7 @@ exports.createReviewValidator = [
     .isMongoId()
     .withMessage("in valid user id format")
     .custom((val, { req }) => {
-      if (!(val === req.user.id)) {
+      if (val !== req.user.id) {
         throw new Error("you must be the same user to create a new review");
       }
       return true;
@@ -52,8 +52,10 @@ exports.updateReviewValidator = [
     .withMessage("invalid Review id format")
     .custom(async (val, { req }) => {
       const review = await Review.findById(val);
-
-      if (review.user._id.toString() !== req.user.id.toString()) {
+      if (!review) {
+        throw new Error("no review found with this id");
+      }
+      if (review.user.id.toString() !== req.user.id.toString()) {
         throw new Error(
           "you must be the same user who created that review to update the review"
         );
