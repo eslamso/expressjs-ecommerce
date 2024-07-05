@@ -1,16 +1,15 @@
 const asyncHandler = require("express-async-handler");
 const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
-const { concurrency } = require("sharp");
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const doc = await Model.findByIdAndDelete(id);
-
     if (!doc) {
       return next(new AppError("No document found with that ID", 404));
     }
+    Model.remove();
     res.status(204).json({
       success: true,
     });
@@ -25,6 +24,7 @@ exports.updateOne = (Model) =>
     if (!doc) {
       return new AppError("No document found with that ID", 404);
     }
+    //to trigger post save middleware to calculate ratings avg
     res.status(200).json({
       success: true,
       doc,
@@ -41,16 +41,18 @@ exports.createOne = (Model) =>
       doc,
     });
   });
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const document = await Model.findById(id);
-    if (!document) {
+    let query = Model.findById(id);
+    if (!query) {
       return next(new AppError("not found document", 404));
     }
+    query = query.populate(populateOpt);
+    query = await query;
     res.status(200).json({
       success: true,
-      document,
+      query,
     });
   });
 

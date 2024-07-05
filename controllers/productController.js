@@ -49,7 +49,7 @@ exports.getAllProducts = handler.getAll(productModel, "products");
 // @desc get product
 // @route GET /api/v1/product/:id
 // @access Public
-exports.getProduct = handler.getOne(productModel);
+exports.getProduct = handler.getOne(productModel, "reviews");
 
 // @desc update product
 // @route PUT /api/v1/product/:id

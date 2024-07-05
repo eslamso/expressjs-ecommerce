@@ -150,3 +150,119 @@ exports.deleteMe = asyncHandler(async (req, res, next) => {
       "you account is deactivated for 30 day after that time it will be removed permanently",
   });
 });
+
+exports.addProductToMyFavorites = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      //addToSet if id founded in set before added it not added again
+      $addToSet: { wishList: id },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    wishList: user.wishList,
+  });
+});
+
+exports.removeProductFromMyFavorites = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      //addToSet if id founded in set before added it not added again
+      $pull: { wishList: id },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    wishList: user.wishList,
+  });
+});
+
+exports.getMyFavoriteProducts = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findById(req.user.id).populate("wishList");
+
+  res.status(200).json({
+    success: true,
+    wishList: user.wishList,
+  });
+});
+
+exports.addAddress = asyncHandler(async (req, res, next) => {
+  const address = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      //addToSet if id founded in set before added it not added again
+      $addToSet: { addresses: address },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    addresses: user.addresses,
+  });
+});
+
+exports.updateAddress = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const data = req.body;
+  // to transform req.body into "address.$.bodyAttribute" to fit with $set
+  // eslint-disable-next-line node/no-unsupported-features/es-builtins
+  const transformedObject = Object.fromEntries(
+    Object.entries(data).map(([key, value]) => {
+      // Transform the key as needed
+      const newKey = `addresses.$.${key}`;
+      return [newKey, value];
+    })
+  );
+  const user = await User.findOneAndUpdate(
+    { _id: req.user.id, "addresses._id": id },
+    {
+      //addToSet if id founded in set before added it not added again
+      $set: transformedObject,
+    },
+    { new: true }
+  );
+  console.log(req.body);
+  res.status(200).json({
+    success: true,
+    message: "address is deleted successfully",
+    addresses: user.addresses,
+  });
+});
+
+exports.removeAddress = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      //addToSet if id founded in set before added it not added again
+      $pull: { addresses: { _id: id } },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    wishList: user.addresses,
+  });
+});
+
+exports.getMyAddresses = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    wishList: user.addresses,
+  });
+});

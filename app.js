@@ -10,6 +10,9 @@ const brandRoute = require("./routes/brandRoutes");
 const productRoute = require("./routes/productRoutes");
 const userRoute = require("./routes/userRoutes");
 const authRoute = require("./routes/authRoutes");
+const reviewRoute = require("./routes/reviewRoutes");
+const favoriteRoute = require("./routes/favoriteRoutes");
+const addressRoute = require("./routes/addressRoutes");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
@@ -32,6 +35,9 @@ app.use("/api/v1/brand", brandRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/review", reviewRoute);
+app.use("/api/v1/fav", favoriteRoute);
+app.use("/api/v1/address", addressRoute);
 
 // unhandled routes
 app.all("*", (req, res, next) => {

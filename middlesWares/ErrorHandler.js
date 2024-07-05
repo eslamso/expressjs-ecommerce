@@ -14,9 +14,8 @@ const sendErrorProduction = (err, res) => {
     message: err.message,
   });
 };
-const handleInvalidSignature = () => {
+const handleInvalidSignature = () =>
   new AppError("in invalid token ,please login again", 401);
-};
 const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";

@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 
 const validator = require("express-validator");
 const validatorMiddleWare = require("../../middlesWares/validatorMiddleWare");
-const { validate } = require("../../models/userModel");
 const User = require("../../models/userModel");
 exports.getUserValidator = [
   validator.check("id").isMongoId().withMessage("invalid User id format"),
@@ -24,7 +23,7 @@ exports.signUpValidator = [
     .withMessage("a User must have email")
     .isEmail()
     .withMessage("invalid email format")
-    .custom(async (val, { req }) => {
+    .custom(async (val) => {
       const user = await User.findOne({ email: val });
       if (user) {
         throw new Error("email already exists");
