@@ -129,7 +129,7 @@ exports.updateProductQuantityCart = asyncHandler(async (req, res, next) => {
   const productIndex = cart.cartItems.findIndex(
     (item) => item._id.toString() === itemId.toString()
   );
-  if (productIndex == -1) {
+  if (productIndex === -1) {
     return next(new AppError("item not found in cart", 404));
   }
   const item = cart.cartItems[productIndex];
