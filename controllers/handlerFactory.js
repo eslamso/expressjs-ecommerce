@@ -9,7 +9,6 @@ exports.deleteOne = (Model) =>
     if (!doc) {
       return next(new AppError("No document found with that ID", 404));
     }
-    Model.remove();
     res.status(204).json({
       success: true,
     });

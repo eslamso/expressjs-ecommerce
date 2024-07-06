@@ -1,5 +1,3 @@
-const slugify = require("slugify");
-
 const validator = require("express-validator");
 const validatorMiddleWare = require("../../middlesWares/validatorMiddleWare");
 const ProductModel = require("../../models/productModel");
