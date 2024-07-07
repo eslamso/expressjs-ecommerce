@@ -5,10 +5,27 @@ const asyncHandler = require("express-async-handler");
 const AppError = require("../utils/appError");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
+const User = require("../models/userModel");
+
 const ProductModel = require("../models/productModel");
 const handler = require("./handlerFactory");
 
-const stripeCardOrder = async (session) => {};
+const stripeCardOrder = async (session) => {
+  const cart = await Cart.findById(session.data.client_reference_id);
+  const price = session.data.object.amount_total / 100;
+  const user = await User.findOne({ email: session.data.email });
+  const shippingAddress = session.data.metadata.shipping_address;
+
+  const order = await Order.create({
+    user: user._id,
+    cartItems: cart.cartItems,
+    shippingAddress,
+    totalOrderPrice: price,
+    isPaid: true,
+    PaidAt: Date.now(),
+    paymentMethod: "online",
+  });
+};
 
 exports.createCashPayment = asyncHandler(async (req, res, next) => {
   //1- get cart with cart Id
@@ -140,7 +157,6 @@ exports.stripeCheckOutSession = asyncHandler(async (req, res, next) => {
 
 exports.stripeWebhook = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
-
   let event;
 
   try {
