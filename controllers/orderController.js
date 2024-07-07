@@ -10,11 +10,13 @@ const User = require("../models/userModel");
 const ProductModel = require("../models/productModel");
 const handler = require("./handlerFactory");
 
-const stripeCardOrder = async (session) => {
-  const cart = await Cart.findById(session.data.client_reference_id);
+const stripeCardOrder = async (res, session) => {
+  const cart = await Cart.findById(session.data.object.client_reference_id);
   const price = session.data.object.amount_total / 100;
-  const user = await User.findOne({ email: session.data.email });
-  const shippingAddress = session.data.metadata.shipping_address;
+  const user = await User.findOne({
+    email: session.data.object.customer_email,
+  });
+  const shippingAddress = session.data.object.metadata.shipping_Address;
 
   const order = await Order.create({
     user: user._id,
@@ -25,6 +27,30 @@ const stripeCardOrder = async (session) => {
     PaidAt: Date.now(),
     paymentMethod: "online",
   });
+  if (order) {
+    // eslint-disable-next-line arrow-body-style
+    /*
+    const bulkOpt = cart.cartItems.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { quantity: -item.quantity, sold: item.quantity } },
+        },
+      };
+    });
+*/
+    //await ProductModel.bulkWrite(bulkOpt, {});
+    cart.cartItems.forEach(async (item) => {
+      await ProductModel.findByIdAndUpdate(item.product, {
+        $inc: { quantity: -item.quantity, sold: +item.quantity },
+      });
+    });
+    //5-remove cart
+    await Cart.deleteOne({ _id: cart._id });
+  }
+  res
+    .status(201)
+    .json({ success: true, message: "order is created successfully" });
 };
 
 exports.createCashPayment = asyncHandler(async (req, res, next) => {
@@ -147,7 +173,7 @@ exports.stripeCheckOutSession = asyncHandler(async (req, res, next) => {
     cancel_url: `${req.protocol}://${req.get("host")}/cart`,
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
-    metadata: req.body.shippingAddress,
+    metadata: { shipping_Address: req.body.shippingAddress },
   });
   res.status(201).json({
     success: true,
@@ -171,7 +197,6 @@ exports.stripeWebhook = asyncHandler(async (req, res, next) => {
   }
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    console.log(session);
+    await stripeCardOrder(res, session);
   }
-  res.status(200).json({ received: true });
 });
