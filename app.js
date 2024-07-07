@@ -20,10 +20,21 @@ const app = express();
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
 const mountRoutes = require("./routes");
+const { stripeWebhook } = require("./controllers/orderController");
 //middlewares
 app.use(cors());
 app.options("*", cors()); // include before other routes
 app.use(compression());
+
+app.post(
+  "/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
+
+app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// to send convert to json object
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
@@ -31,9 +42,6 @@ app.set("views", path.join(__dirname, "views"));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// to send convert to json object
-app.use(express.json());
 
 // mount Routes
 mountRoutes(app);

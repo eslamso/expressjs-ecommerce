@@ -8,6 +8,8 @@ const Cart = require("../models/cartModel");
 const ProductModel = require("../models/productModel");
 const handler = require("./handlerFactory");
 
+const stripeCardOrder = async (session) => {};
+
 exports.createCashPayment = asyncHandler(async (req, res, next) => {
   //1- get cart with cart Id
   //app settings
@@ -134,4 +136,26 @@ exports.stripeCheckOutSession = asyncHandler(async (req, res, next) => {
     success: true,
     session,
   });
+});
+
+exports.stripeWebhook = asyncHandler(async (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    console.log(session);
+  }
+  res.status(200).json({ received: true });
 });
