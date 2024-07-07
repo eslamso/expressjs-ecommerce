@@ -4,6 +4,12 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const compression = require("compression");
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { rateLimit } = require("express-rate-limit");
+// eslint-disable-next-line import/no-extraneous-dependencies
+const hpp = require("hpp");
+// eslint-disable-next-line import/no-extraneous-dependencies
+const mongoSanitize = require("express-mongo-sanitize");
 
 const app = express();
 // const categoryRoute = require("./routes/categoryRoutes");
@@ -32,7 +38,7 @@ app.post(
   stripeWebhook
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "20kb" }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // to send convert to json object
 
@@ -42,6 +48,14 @@ app.set("views", path.join(__dirname, "views"));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use(mongoSanitize());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+});
+app.use(limiter);
+app.use(hpp()); // <- THIS IS THE NEW LINE
 
 // mount Routes
 mountRoutes(app);

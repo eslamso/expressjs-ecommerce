@@ -141,4 +141,4 @@ const session = {
   },
   type: "checkout.session.completed",
 };
-console.log(session.data.object.metadata);
+console.log(session.data.object.client_reference_id);
