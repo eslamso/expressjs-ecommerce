@@ -2,6 +2,8 @@ const path = require("path");
 
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
+const compression = require("compression");
 
 const app = express();
 // const categoryRoute = require("./routes/categoryRoutes");
@@ -19,6 +21,9 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
 const mountRoutes = require("./routes");
 //middlewares
+app.use(cors());
+app.options("*", cors()); // include before other routes
+app.use(compression());
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));

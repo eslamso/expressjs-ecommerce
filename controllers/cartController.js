@@ -12,13 +12,21 @@ const calCartPrice = async (cart) => {
     total += item.quantity * item.price;
   });
   cart.totalCartPrice = total.toFixed(2);
+  // when the coupon is removed
   cart.totalCartPriceAfterDiscount = undefined;
 
   await cart.save();
 };
+
 exports.addProductToCart = asyncHandler(async (req, res, next) => {
   const { productId, color } = req.body;
   const product = await Product.findById(productId);
+  if (!product) {
+    return next(new AppError("No product found with that ID", 404));
+  }
+  if (product.quantity < 1) {
+    return next(new AppError("This product is out of stock", 400));
+  }
   //1- if user has already cart created or ont
   let cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
@@ -28,7 +36,7 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
     });
   } else {
     //2- if user has already cart and check if the product found on the cart or not
-    console.log("element added here");
+    // console.log("element added here");
     const productIndex = cart.cartItems.findIndex(
       (item) => item.product.toString() === productId && item.color === color
     );
