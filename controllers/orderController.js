@@ -196,7 +196,7 @@ exports.stripeWebhook = asyncHandler(async (req, res, next) => {
     return;
   }
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
+    const session = event;
     await stripeCardOrder(res, session);
   }
 });
