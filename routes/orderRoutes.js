@@ -9,6 +9,7 @@ const {
   updateOrderToDeliver,
   stripeCheckOutSession,
 } = require("../controllers/orderController");
+const { opayCheckOutSession } = require("../controllers/opayOrderController");
 
 const router = express.Router();
 router.use(protect);
@@ -23,4 +24,7 @@ router
   .route("/stripe-checkout-session/:cartId")
   .get(restrictTo("user"), stripeCheckOutSession);
 
+router
+  .route("/opay-checkout-session/:cartId")
+  .get(restrictTo("user"), opayCheckOutSession);
 module.exports = router;

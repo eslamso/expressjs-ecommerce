@@ -27,6 +27,7 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./middlesWares/ErrorHandler");
 const mountRoutes = require("./routes");
 const { stripeWebhook } = require("./controllers/orderController");
+const { opayWebhook } = require("./controllers/opayOrderController");
 //middlewares
 app.use(cors());
 app.options("*", cors()); // include before other routes
@@ -36,6 +37,12 @@ app.post(
   "/stripe-webhook",
   express.raw({ type: "application/json" }),
   stripeWebhook
+);
+
+app.post(
+  "/opay-webhook",
+  express.raw({ type: "application/json" }),
+  opayWebhook
 );
 
 app.use(express.json({ limit: "20kb" }));
@@ -52,7 +59,7 @@ app.use(mongoSanitize());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 });
 app.use(limiter);
 app.use(hpp()); // <- THIS IS THE NEW LINE
