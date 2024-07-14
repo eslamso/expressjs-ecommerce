@@ -39,13 +39,8 @@ app.post(
   stripeWebhook
 );
 
-app.post(
-  "/opay-webhook",
-  express.raw({ type: "application/json" }),
-  opayWebhook
-);
-
 app.use(express.json({ limit: "20kb" }));
+app.post("/opay-webhook", opayWebhook);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // to send convert to json object
 
