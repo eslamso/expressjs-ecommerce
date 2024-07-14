@@ -68,7 +68,7 @@ exports.opayCheckOutSession = asyncHandler(async (req, res, next) => {
       currency: "EGP",
       total: Math.round(totalCartPrice * 100),
     },
-    callbackUrl: "https://natoursapp-lu63.onrender.com/stripe-webhook",
+    callbackUrl: "https://natoursapp-lu63.onrender.com/opay-webhook",
     cancelUrl: "https://www.w3schools.com/howto/howto_js_remove_decimals.asp",
     country: "EG",
     expireAt: 300,
