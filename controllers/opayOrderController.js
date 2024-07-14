@@ -109,8 +109,8 @@ exports.opayCheckOutSession = asyncHandler(async (req, res, next) => {
 });
 
 exports.opayWebhook = asyncHandler(async (req, res, next) => {
-  const session = req.body;
-  console.log("session :", session);
+  const session = req.body.payload;
+  console.log("session :", session.payload);
 
   const cart = await Cart.findById(session.reference);
   const user = await User.findById(cart.user);
