@@ -72,7 +72,6 @@ exports.opayCheckOutSession = asyncHandler(async (req, res, next) => {
     cancelUrl: "https://www.w3schools.com/howto/howto_js_remove_decimals.asp",
     country: "EG",
     expireAt: 300,
-    payMethod: "BankCard",
     productList: [
       {
         description: "order to my products",
