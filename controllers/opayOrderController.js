@@ -113,52 +113,33 @@ exports.opayWebhook = asyncHandler(async (req, res, next) => {
   console.log("session :", session);
 
   const cart = await Cart.findById(session.reference);
-  const { status } = req.body;
+  const user = await User.findById(cart.user);
+  const { status } = session;
 
   if (status === "SUCCESS") {
     // Handle successful payment logic here (e.g., update database)
-    res.status(200).json({ message: "Payment successful" });
+    const price = session.amount / 100;
+    const order = await Order.create({
+      user: user._id,
+      cartItems: cart.cartItems,
+      totalOrderPrice: price,
+      isPaid: true,
+      PaidAt: Date.now(),
+      paymentMethod: "online",
+    });
+    if (order) {
+      cart.cartItems.forEach(async (item) => {
+        await ProductModel.findByIdAndUpdate(item.product, {
+          $inc: { quantity: -item.quantity, sold: +item.quantity },
+        });
+      });
+      //5-remove cart
+      await Cart.deleteOne({ _id: cart._id });
+    }
+    res
+      .status(201)
+      .json({ success: true, message: "order is created successfully" });
   } else {
     res.status(400).json({ message: "Payment failed" });
   }
-
-  //   const price = session.amount / 100;
-  //   const user = await User.findOne({
-  //     email: session.data.object.customer_email,
-  //   });
-  //   const shippingAddress = session.data.object.metadata.shipping_Address;
-
-  //   const order = await Order.create({
-  //     user: user._id,
-  //     cartItems: cart.cartItems,
-  //     shippingAddress,
-  //     totalOrderPrice: price,
-  //     isPaid: true,
-  //     PaidAt: Date.now(),
-  //     paymentMethod: "online",
-  //   });
-  //   if (order) {
-  //     // eslint-disable-next-line arrow-body-style
-  //     /*
-  //     const bulkOpt = cart.cartItems.map((item) => {
-  //       return {
-  //         updateOne: {
-  //           filter: { _id: item.product },
-  //           update: { $inc: { quantity: -item.quantity, sold: item.quantity } },
-  //         },
-  //       };
-  //     });
-  // */
-  //     //await ProductModel.bulkWrite(bulkOpt, {});
-  //     cart.cartItems.forEach(async (item) => {
-  //       await ProductModel.findByIdAndUpdate(item.product, {
-  //         $inc: { quantity: -item.quantity, sold: +item.quantity },
-  //       });
-  //     });
-  //     //5-remove cart
-  //     await Cart.deleteOne({ _id: cart._id });
-  //   }
-  // res
-  //   .status(201)
-  //   .json({ success: true, message: "order is created successfully" });
 });
